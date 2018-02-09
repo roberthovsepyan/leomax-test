@@ -43,7 +43,7 @@ export default class FinalSum extends Component {
             return (
                 <span>
                     <NumberWrapper color='#BDBDBD'>{this.props.cost} + 150</NumberWrapper>
-                    <NumberWrapper>{` = ${totalCost}`}</NumberWrapper>
+                    <NumberWrapper>{` =  ${totalCost}`}</NumberWrapper>
                 </span>
             );
         }

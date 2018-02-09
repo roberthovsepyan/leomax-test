@@ -31,6 +31,7 @@ export default class SubscriptionDuration extends Component {
     componentWillReceiveProps (nextProps) {
         if ((nextProps.paymentMethod === 'webmoney' || nextProps.paymentMethod === 'giftcode' ||
             nextProps.paymentMethod === 'qiwi' || nextProps.giftChecked) && nextProps.autoChecked) {
+            //remove the check from checkbox
             this.props.handleCheck();
         }
     };

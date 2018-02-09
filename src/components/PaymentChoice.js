@@ -45,6 +45,11 @@ const SmallTextWrapper = styled.div`
 
 export default class PaymentChoice extends Component {
 
+    componentWillReceiveProps () {
+        //so that content renders correctly
+        this.props.handleGiftCode();
+    };
+
     handleClick = (name) => {
         this.props.changePaymentMethod(name);
     };

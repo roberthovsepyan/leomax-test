@@ -6,6 +6,10 @@ import {Header} from './components/Header';
 import {ClubName} from './components/ClubName';
 import SubscriptionDuration from './components/SubscriptionDuration';
 import FinalSum from './components/FinalSum';
+import Paying from './components/Paying';
+import {Footer} from './components/Footer';
+import {FinalMessage} from './components/FinalMessage';
+import {GiftCode} from './components/GiftCode';
 
 const ContentWrapper = styled.div`
     margin-left: auto;
@@ -28,7 +32,9 @@ class App extends Component {
             duration: undefined,
             autoSubscribeChecked: false,
             cost: undefined,
-            discountChecked: false
+            discountChecked: false,
+            paid: false,
+            giftCode: '',
         };
     };
 
@@ -60,25 +66,73 @@ class App extends Component {
         this.setState({discountChecked: !this.state.discountChecked});
     };
 
+    handlePay = () => {
+        this.setState({paid: true});
+    };
+
+    handleGiftCode = () => {
+        if (this.state.paymentMethod !== 'giftcode' && this.state.giftCode) {
+            this.setState({giftCode: ''});
+        }
+        else if (this.state.paymentMethod === 'giftcode' && this.state.duration) {
+            this.setState({duration: undefined});
+        }
+    };
+
+    setGiftCode = (code) => {
+        this.setState({giftCode: code});
+    };
+
+    renderContent () {
+        if (this.state.paymentMethod && this.state.paymentMethod !== 'giftcode') {
+            return (
+            <SubscriptionDuration option={this.state.duration} changeDuration={this.changeDuration}
+                                  autoChecked={this.state.autoSubscribeChecked}
+                                  giftChecked={this.state.giftChecked}
+                                  handleCheck={this.handleAutoCheck}
+                                  paymentMethod={this.state.paymentMethod}/>
+            );
+        }
+        else if (this.state.paymentMethod === 'giftcode') {
+            return (
+                <GiftCode giftCode={this.state.giftCode} setGiftCode={this.setGiftCode}/>
+            );
+        }
+        else {return undefined;}
+    };
+
     render() {
         return (
             <div>
                 <Header/>
-                <ContentWrapper>
-                    <ClubName/>
-                    <PaymentChoice paymentMethod={this.state.paymentMethod} changePaymentMethod={this.changePaymentMethod}
-                                   handleCheck={this.handleGiftCheck} giftChecked={this.state.giftChecked}/>
-                    {this.state.paymentMethod && <hr color='#EEEEEE' size='5px'/>}
-                    {this.state.paymentMethod &&
-                    <SubscriptionDuration option={this.state.duration} changeDuration={this.changeDuration}
-                                          autoChecked={this.state.autoSubscribeChecked} giftChecked={this.state.giftChecked}
-                                          handleCheck={this.handleAutoCheck} paymentMethod={this.state.paymentMethod}/>}
-                    {this.state.duration && <hr color='#EEEEEE' size='5px'/>}
-                    {this.state.duration &&
-                    <FinalSum duration={this.state.duration} autoSubscribed={this.state.autoSubscribeChecked}
-                              cost={this.state.cost} handleCheck={this.handleDiscountCheck}
-                              discountChecked={this.state.discountChecked}/>}
-                </ContentWrapper>
+                {this.state.paid ?
+                    <ContentWrapper>
+                        <FinalMessage paymentMethod={this.state.paymentMethod} giftChecked={this.state.giftChecked}
+                                      duration={this.state.duration} autoSubscribed={this.state.autoSubscribeChecked}
+                                      cost={this.state.cost} discountChecked={this.state.discountChecked}
+                                      giftCode={this.state.giftCode}/>
+                    </ContentWrapper>
+                    :
+                    <ContentWrapper>
+                        <ClubName/>
+                        <PaymentChoice paymentMethod={this.state.paymentMethod}
+                                       changePaymentMethod={this.changePaymentMethod}
+                                       handleCheck={this.handleGiftCheck} giftChecked={this.state.giftChecked}
+                                       handleGiftCode={this.handleGiftCode}/>
+                        {this.state.paymentMethod && <hr color='#EEEEEE' size='5px'/>}
+                        {this.renderContent()}
+                        {(this.state.duration && this.state.paymentMethod !== 'giftcode') &&
+                        <div>
+                        <hr color='#EEEEEE' size='5px'/>
+                        <FinalSum duration={this.state.duration} autoSubscribed={this.state.autoSubscribeChecked}
+                                  cost={this.state.cost} handleCheck={this.handleDiscountCheck}
+                                  discountChecked={this.state.discountChecked}/>
+                        </div>}
+                        <Paying giftCode={this.state.giftCode} duration={this.state.duration} handlePay={this.handlePay}/>
+                    </ContentWrapper>
+                }
+                <hr color='#E0E0E0' size='5px'/>
+                <Footer/>
             </div>
         );
     }
